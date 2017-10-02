@@ -7,7 +7,7 @@ public class BGCreator : MonoBehaviour {
 
 	public GameObject bgSquarePrefab;
 	private SpriteRenderer[,] bricks;
-	private Vector2 topLeftCorner = new Vector2 (-2, 2);
+	private Vector2 topLeftCorner = new Vector2 (0, 11);
 
 	public void generateGrid(int[] proportions, float squareDist){
 		bricks = new SpriteRenderer[proportions [0], proportions [1]];

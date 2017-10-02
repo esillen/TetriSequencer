@@ -6,7 +6,7 @@ public class GamePlayOverlord : MonoBehaviour {
 
 	public BGCreator bgCreator;
 
-	private float squareDist = 0.5f;
+	private float squareDist = 1f;
 	private int[] proportions = new int[2]{8, 12};
 
 	private int spawnGridHeight = 5;

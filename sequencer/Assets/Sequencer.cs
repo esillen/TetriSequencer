@@ -7,16 +7,25 @@ public class Sequencer : MonoBehaviour {
 
 	public GameObject highlight;
 	public AudioClip [] clips;
-	private const int width = 8;
-	private const int height = 10;
+	private int width;
+	private int height;
 	private float timePerBeat = 0.2f;
 	private float currentTime = 0.0f;
-	private GameObject[,] objectMap = new GameObject[height,width];
+	private GameObject[,] objectMap;
 	private int currentColumn = 0;
-	private AudioSource [] audioSources = new AudioSource[height];
+	private AudioSource [] audioSources;
+	private GamePlayOverlord gamePlayOverlord;
 
 	// Use this for initialization
 	void Start () {
+		gamePlayOverlord = GetComponent<GamePlayOverlord> ();
+	
+
+		int[,] gameGrid = gamePlayOverlord.getGameGrid ();
+		height = gameGrid.GetLength (1);
+		width = gameGrid.GetLength (0);
+		objectMap = new GameObject[height,width];
+		audioSources = new AudioSource[height];
 		for (int i = 0; i < height; i++) {
 			audioSources[i] = gameObject.AddComponent<AudioSource> ();
 		}
@@ -33,7 +42,7 @@ public class Sequencer : MonoBehaviour {
 
 	private void updateInstruments() {
 
-		int [,] gameGrid = GetComponent<GamePlayOverlord> ().getGameGrid();
+		int[,] gameGrid = gamePlayOverlord.getGameGrid ();
 		
 		for (int i = 0; i < height; i++) {
 			if (objectMap [i, currentColumn] != null) {
@@ -42,15 +51,17 @@ public class Sequencer : MonoBehaviour {
 			}
 		}
 
+
 		currentColumn++;
 		if (currentColumn >= width) {
 			currentColumn = 0;
 		}
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = height - 1; i >= 0; i--) {
+			int posFromGround = height - i - 1; // So that clip 0 plays at the bottom (easier to think that way imo)
 			objectMap [i, currentColumn] = Instantiate (highlight, new Vector3 (currentColumn, i, 0f), Quaternion.identity) as GameObject;
-			if (gameGrid [i, currentColumn] != (int)SqaureState.Empty) {
-				audioSources[i].PlayOneShot (clips[i]);
+			if (gameGrid [currentColumn,  i] != (int)SqaureState.Empty && posFromGround < clips.GetLength(0)) {
+				audioSources[i].PlayOneShot (clips[posFromGround]);
 			}
 		}
 	}
