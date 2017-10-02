@@ -30,7 +30,10 @@ public class GamePlayOverlord : MonoBehaviour {
 	}
 
 	void Update(){
-
+		if (Input.GetKeyDown (KeyCode.LeftArrow))
+			fullGrid = BoardControlls.moveInXDirection (fullGrid, -1);
+		if(Input.GetKeyDown (KeyCode.RightArrow))
+			fullGrid = BoardControlls.moveInXDirection (fullGrid, 1);
 		bgCreator.render (getGameGrid());
 	}
 
@@ -38,30 +41,15 @@ public class GamePlayOverlord : MonoBehaviour {
 
 	private IEnumerator gameLoop(){
 		while (gameOver == false) {
-			printGrid (fullGrid);
-			yield return new WaitForSeconds (0.5f);
+			yield return new WaitForSeconds (0.1f);
 			moveBoardDown ();
 		}
 	}
 		
 	private void moveBoardDown(){
-		List<int[]> moveIndexes = new List<int[]> ();
+		List<int[]> moveIndexes = BoardControlls.getMovingPos (fullGrid);
 
-		//Find all current moving parts
-		for (int y = fullGrid.GetLength (1)-1; y >= 0; y--)
-			for (int x = 0; x < fullGrid.GetLength (0); x++) 
-				if (fullGrid [x, y] == (int)SqaureState.Moving)
-					moveIndexes.Add (new int[2]{x, y});
-
-		//Detect if we have a crash
-		bool stop = false;
-		foreach (int[] m in moveIndexes) 
-			if(m[1]+1 >= fullGrid.GetLength(1) || (fullGrid[m[0], m[1]+1] != (int)SqaureState.Empty) && moveIndexes.Find(x => x[0] == m[0] && x[1] == m[1]+1) == null){
-				stop = true;
-				break;
-			}
-
-		if (stop) {
+		if (BoardControlls.canMove(fullGrid, 0, 1) == false) {
 			stopMoving ();
 			spawnNewPice ();
 			return;
@@ -89,16 +77,12 @@ public class GamePlayOverlord : MonoBehaviour {
 	private void spawnNewPice(){
 		movingPiece = PiceGenerator.getRandomPiece ();
 		//Give random rotation to piece
-		int startX = Random.Range (0, proportions [0] - movingPiece.GetLength (0));
+		int startX = Random.Range (0, proportions [0] - movingPiece.GetLength (0)+ 1);
 		for (int x = 0; x < movingPiece.GetLength (0); x++)
 			for (int y = 0; y < movingPiece.GetLength (1); y++)
 				fullGrid [startX + x, spawnGridHeight - movingPiece.GetLength (1) + y] = movingPiece [x, y];
 	}
-
-
-
-
-
+		
 	private void printGrid(int[,] temp){
 		for (int y = 0; y < temp.GetLength (1); y++) {
 			string s = "";
@@ -107,6 +91,9 @@ public class GamePlayOverlord : MonoBehaviour {
 			print (s);
 		}
 	}
+
+
+
 
 
 	public int[,] getGameGrid(){
