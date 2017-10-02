@@ -30,11 +30,8 @@ public class GamePlayOverlord : MonoBehaviour {
 	}
 
 	void Update(){
-		int[,] gameGrid = new int[proportions [0], proportions [1]];
-		for (int y = 0; y < proportions [1]; y++)
-			for (int x = 0; x < proportions [0]; x++)
-				gameGrid [x, y] = fullGrid [x, y+spawnGridHeight];
-		bgCreator.render (gameGrid);
+
+		bgCreator.render (getGameGrid());
 	}
 
 
@@ -109,6 +106,15 @@ public class GamePlayOverlord : MonoBehaviour {
 				s += temp [x, y].ToString () + " ";
 			print (s);
 		}
+	}
+
+
+	public int[,] getGameGrid(){
+		int[,] gameGrid = new int[proportions [0], proportions [1]];
+		for (int y = 0; y < proportions [1]; y++)
+			for (int x = 0; x < proportions [0]; x++)
+				gameGrid [x, y] = fullGrid [x, y+spawnGridHeight];
+		return gameGrid;
 	}
 
 }
